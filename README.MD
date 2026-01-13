@@ -1,3 +1,39 @@
+
+## Android udocker
+你需要克隆此仓库
+并按照 [这里](https://wing.moe/posts/arm/android_docker.html) 的教程配置udocker环境
+
+```bash
+mkdir ~/neko-documents
+cd N.E.K.O
+udocker run \
+  -v ~/neko-documents:/root/Documents/N.E.K.O \
+  -v $(pwd):/app/logs \
+  -e NEKO_CORE_API_KEY="${NEKO_CORE_API_KEY}" \
+  -e NEKO_ASSIST_API_KEY_QWEN="${NEKO_ASSIST_API_KEY_QWEN}" \
+  -e NEKO_ASSIST_API_KEY_OPENAI="${NEKO_ASSIST_API_KEY_OPENAI}" \
+  -e NEKO_ASSIST_API_KEY_GLM="${NEKO_ASSIST_API_KEY_GLM}" \
+  -e NEKO_ASSIST_API_KEY_STEP="${NEKO_ASSIST_API_KEY_STEP}" \
+  -e NEKO_ASSIST_API_KEY_SILICON="${NEKO_ASSIST_API_KEY_SILICON}" \
+  -e NEKO_MCP_TOKEN="${NEKO_MCP_TOKEN}" \
+  -e NEKO_CORE_API="${NEKO_CORE_API:-qwen}" \
+  -e NEKO_ASSIST_API="${NEKO_ASSIST_API:-qwen}" \
+  -e NEKO_MAIN_SERVER_PORT=48911 \
+  -e NEKO_MEMORY_SERVER_PORT=48912 \
+  -e NEKO_MONITOR_SERVER_PORT=48913 \
+  -e NEKO_TOOL_SERVER_PORT=48915 \
+  -e NEKO_SUMMARY_MODEL="${NEKO_SUMMARY_MODEL:-qwen-plus}" \
+  -e NEKO_CORRECTION_MODEL="${NEKO_CORRECTION_MODEL:-qwen-max}" \
+  -e NEKO_EMOTION_MODEL="${NEKO_EMOTION_MODEL:-qwen-turbo}" \
+  -e NEKO_VISION_MODEL="${NEKO_VISION_MODEL:-qwen3-vl-plus-2025-09-23}" \
+  -e NEKO_MCP_ROUTER_URL="${NEKO_MCP_ROUTER_URL:-http://localhost:3283}" \
+  -e NGINX_PORT=8111
+  registry.cn-hangzhou.aliyuncs.com/morxi/neko-python:latest
+
+请根据自身需求修改环境变量
+```
+
+
 <div align="center">
 
 ![Logo](assets/neko_logo.jpg)
@@ -82,39 +118,6 @@ https://github.com/user-attachments/assets/9d9e01af-e2cc-46aa-add7-8eb1803f061c
 QQ群：1022939659
 
 
-## Android udocker
-你需要克隆此仓库
-并按照 [这里](https://wing.moe/posts/arm/android_docker.html) 的教程配置udocker环境
-
-```bash
-mkdir ~/neko-documents
-cd N.E.K.O
-udocker run \
-  -v ~/neko-documents:/root/Documents/N.E.K.O \
-  -v $(pwd):/app/logs \
-  -e NEKO_CORE_API_KEY="${NEKO_CORE_API_KEY}" \
-  -e NEKO_ASSIST_API_KEY_QWEN="${NEKO_ASSIST_API_KEY_QWEN}" \
-  -e NEKO_ASSIST_API_KEY_OPENAI="${NEKO_ASSIST_API_KEY_OPENAI}" \
-  -e NEKO_ASSIST_API_KEY_GLM="${NEKO_ASSIST_API_KEY_GLM}" \
-  -e NEKO_ASSIST_API_KEY_STEP="${NEKO_ASSIST_API_KEY_STEP}" \
-  -e NEKO_ASSIST_API_KEY_SILICON="${NEKO_ASSIST_API_KEY_SILICON}" \
-  -e NEKO_MCP_TOKEN="${NEKO_MCP_TOKEN}" \
-  -e NEKO_CORE_API="${NEKO_CORE_API:-qwen}" \
-  -e NEKO_ASSIST_API="${NEKO_ASSIST_API:-qwen}" \
-  -e NEKO_MAIN_SERVER_PORT=48911 \
-  -e NEKO_MEMORY_SERVER_PORT=48912 \
-  -e NEKO_MONITOR_SERVER_PORT=48913 \
-  -e NEKO_TOOL_SERVER_PORT=48915 \
-  -e NEKO_SUMMARY_MODEL="${NEKO_SUMMARY_MODEL:-qwen-plus}" \
-  -e NEKO_CORRECTION_MODEL="${NEKO_CORRECTION_MODEL:-qwen-max}" \
-  -e NEKO_EMOTION_MODEL="${NEKO_EMOTION_MODEL:-qwen-turbo}" \
-  -e NEKO_VISION_MODEL="${NEKO_VISION_MODEL:-qwen3-vl-plus-2025-09-23}" \
-  -e NEKO_MCP_ROUTER_URL="${NEKO_MCP_ROUTER_URL:-http://localhost:3283}" \
-  -e NGINX_PORT=8111
-  registry.cn-hangzhou.aliyuncs.com/morxi/neko-python:latest
-
-请根据自身需求修改环境变量
-```
 
 ## 快速开始（Windows用户）
 
