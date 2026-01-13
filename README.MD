@@ -8,7 +8,7 @@ mkdir ~/neko-documents
 cd N.E.K.O
 udocker run \
   -v ~/neko-documents:/root/Documents/N.E.K.O \
-  -v $(pwd):/app/logs \
+  -v $(pwd):/app \
   -e NEKO_CORE_API_KEY="${NEKO_CORE_API_KEY}" \
   -e NEKO_ASSIST_API_KEY_QWEN="${NEKO_ASSIST_API_KEY_QWEN}" \
   -e NEKO_ASSIST_API_KEY_OPENAI="${NEKO_ASSIST_API_KEY_OPENAI}" \
