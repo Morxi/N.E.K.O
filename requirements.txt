@@ -112,6 +112,7 @@ httpx==0.28.1
     #   googletrans
     #   langgraph-sdk
     #   langsmith
+    #   n-e-k-o (pyproject.toml)
     #   openai
 httpx-sse==0.4.3
     # via langchain-community
@@ -266,7 +267,7 @@ pyperclip==1.11.0
     # via mouseinfo
 pyrect==0.2.0
     # via pygetwindow
-pyrnnoise==0.4.1
+
     # via n-e-k-o (pyproject.toml)
 pyscreeze==1.0.1
     # via pyautogui
@@ -282,7 +283,6 @@ pytweening==1.2.0
     # via pyautogui
 pyuseragents==1.0.5
     # via translatepy
-pywin32==311
     # via
     #   n-e-k-o (pyproject.toml)
     #   pywinauto

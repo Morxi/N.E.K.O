@@ -34,10 +34,10 @@ dependencies = [
   "pywin32; sys_platform == 'win32'",
   "pywinauto; sys_platform == 'win32'",
   "pygetwindow; sys_platform == 'win32'",
-  "pyrnnoise>=0.4.0",
   "beautifulsoup4>=4.12.0",
   "googletrans>=4.0.2",
   "translatepy",
+  "httpx",
 ]
 
 
@@ -80,4 +80,7 @@ include = [
 exclude = [
   "plugin/plugins",
 ]
+
+[tool.uv]
+  required-environments = ["sys_platform == 'linux' and platform_machine == 'aarch64'"]
 

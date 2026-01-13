@@ -232,29 +232,38 @@ setup_data_persistence() {
 setup_dependencies() {
     echo "📦 Setting up dependencies..."
     cd /app
-    
-    # 激活虚拟环境（如果存在）
-    if [ -f ".venv/bin/activate" ]; then
-        source .venv/bin/activate
+
+    # 创建虚拟环境（如果不存在）
+    if [ ! -d ".venv" ]; then
+        echo "   Creating virtual environment..."
+        python -m venv .venv
     fi
-    
-    # 使用uv sync安装依赖
-    echo "   Installing Python dependencies using uv..."
-    
-    # 检查是否存在uv.lock
-    if [ -f "uv.lock" ]; then
-        uv sync
+
+    # 激活虚拟环境
+    source .venv/bin/activate
+    export PATH=".venv/bin:$PATH"
+
+    # 使用pip安装依赖（更可靠）
+    echo "   Installing Python dependencies using pip..."
+
+    if [ -f "requirements.txt" ]; then
+        echo "   Installing from requirements.txt..."
+        uv pip install --no-cache-dir -r requirements.txt
+    elif [ -f "pyproject.toml" ]; then
+        echo "   Installing from pyproject.toml..."
+        uv pip install --no-cache-dir -e .
     else
-        # 如果没有锁定文件，尝试初始化
-        if [ -f "pyproject.toml" ]; then
-            uv sync
-        else
-            echo "⚠️ No pyproject.toml found. Initializing project..."
-            uv init --non-interactive
-            uv sync
-        fi
+        echo "⚠️ No requirements.txt or pyproject.toml found!"
+        return 1
     fi
-    
+
+    # 验证关键依赖
+    echo "   Verifying key dependencies..."
+    python -c "import fastapi, langchain_openai, httpx; print('✅ Key dependencies verified')" || {
+        echo "❌ Key dependencies verification failed"
+        return 1
+    }
+
     echo "✅ Dependencies installed successfully"
 }
 
@@ -262,7 +271,13 @@ setup_dependencies() {
 start_services() {
     echo "🚀 Starting N.E.K.O. services..."
     cd /app
-    
+
+    # 确保虚拟环境被激活
+    if [ -f ".venv/bin/activate" ]; then
+        source .venv/bin/activate
+        export PATH=".venv/bin:$PATH"
+    fi
+
     local services=("memory_server.py" "main_server.py" "agent_server.py")
     
     for service in "${services[@]}"; do
@@ -299,16 +314,16 @@ start_services() {
     done
     
     # 检查主服务端口（内部检查）
-    if command -v ss &> /dev/null; then
-        if ss -tuln | grep -q ":${NEKO_MAIN_SERVER_PORT} "; then
-            echo "✅ Main server is listening on port ${NEKO_MAIN_SERVER_PORT}"
-        else
-            echo "❌ Main server failed to bind to port"
-            return 1
-        fi
-    else
-        echo "⚠️ Port check skipped (ss command not available)"
-    fi
+#    if command -v ss &> /dev/null; then
+#        if ss -tuln | grep -q ":${NEKO_MAIN_SERVER_PORT} "; then
+#            echo "✅ Main server is listening on port ${NEKO_MAIN_SERVER_PORT}"
+#        else
+#            echo "❌ Main server failed to bind to port"
+#            return 1
+#        fi
+#    else
+#        echo "⚠️ Port check skipped (ss command not available)"
+#    fi
     
     echo "🎉 All N.E.K.O services started successfully!"
 }

@@ -8,20 +8,21 @@ FROM debian:bookworm
 # 设置环境变量
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
-ENV UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
 
 # 设置工作目录
 WORKDIR /app
 
+RUN rm -rf /etc/apt/sources.list*
+
 # 1. 配置阿里云 apt 镜像源
-RUN echo "deb http://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib" > /etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian-security/ bookworm-security main" >> /etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian-security/ bookworm-security main" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian/ bookworm-updates main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian/ bookworm-updates main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian/ bookworm-backports main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian/ bookworm-backports main non-free non-free-firmware contrib" >> /etc/apt/sources.list
+RUN echo "deb http://repo.huaweicloud.com/debian/ bookworm main non-free non-free-firmware contrib" > /etc/apt/sources.list && \
+    echo "deb-src http://repo.huaweicloud.com/debian/ bookworm main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
+    echo "deb http://repo.huaweicloud.com/debian-security/ bookworm-security main" >> /etc/apt/sources.list && \
+    echo "deb-src http://repo.huaweicloud.com/debian-security/ bookworm-security main" >> /etc/apt/sources.list && \
+    echo "deb http://repo.huaweicloud.com/debian/ bookworm-updates main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
+    echo "deb-src http://repo.huaweicloud.com/debian/ bookworm-updates main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
+    echo "deb http://repo.huaweicloud.com/debian/ bookworm-backports main non-free non-free-firmware contrib" >> /etc/apt/sources.list && \
+    echo "deb-src http://repo.huaweicloud.com/debian/ bookworm-backports main non-free non-free-firmware contrib" >> /etc/apt/sources.list
 
 # 2. 更新系统并安装基础依赖
 # 注意：此阶段编译需要传递代理参数，否则编译速度会很慢，除非你在国外
@@ -43,6 +44,8 @@ RUN if [ -n "$HTTP_PROXY" ]; then export http_proxy=$HTTP_PROXY; fi; \
     make \
     portaudio19-dev \
     nginx \
+    nano \
+    vim \
     && rm -rf /var/lib/apt/lists/* && \
     unset http_proxy && \
     unset https_proxy
@@ -57,38 +60,42 @@ RUN groupadd -r nginx && \
 RUN ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
     ln -sf /usr/bin/python3.11 /usr/bin/python
 
-# 4. 安装 uv
-# 注意：此阶段编译需要传递代理参数，否则编译速度会很慢，除非你在国外
-RUN if [ -n "$HTTP_PROXY" ]; then export http_proxy=$HTTP_PROXY; fi; \
-    if [ -n "$HTTPS_PROXY" ]; then export https_proxy=$HTTPS_PROXY; fi; \
-    wget -qO- https://astral.sh/uv/install.sh | sh && \
-    echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.bashrc && \
-    unset http_proxy && \
-    unset https_proxy
+
+RUN wget https://list.bj.morxi.com/d/od-e3-server1/github/astral-sh_uv/0.9.24/uv-aarch64-unknown-linux-gnu.tar.gz?sign=6aS6iyuhfvRUEFZcjEr4-d1TctU2PziQUm21oqUtv7o=:0 -O uv.tar.gz && \
+tar --strip-components=1 -xvzf uv.tar.gz && \
+ls -l && \
+    mv uv /usr/local/bin/uv && \
+    mv uvx /usr/local/bin/uvx && \
+    chmod +x /usr/local/bin/uv && \
+    chmod +x /usr/local/bin/uvx && \
+    echo 'export PATH="/usr/local/bin:$PATH"' >> /root/.bashrc && \
+    rm -rf uv.tar.gz
 
 # 5. 配置 uv 使用阿里云镜像
 RUN mkdir -p /root/.config/uv && \
     echo '[[index]]' > /root/.config/uv/uv.toml && \
-    echo 'url = "https://mirrors.aliyun.com/pypi/simple/"' >> /root/.config/uv/uv.toml && \
+    echo 'url = "http://repo.huaweicloud.com/pypi/simple/"' >> /root/.config/uv/uv.toml && \
     echo 'default = true' >> /root/.config/uv/uv.toml
 
 # 6. 克隆 N.E.K.O. 项目
 # 注意：此阶段编译需要传递代理参数，否则编译速度会很慢，除非你在国外
-RUN if [ -n "$HTTP_PROXY" ]; then export http_proxy=$HTTP_PROXY; fi; \
-    if [ -n "$HTTPS_PROXY" ]; then export https_proxy=$HTTPS_PROXY; fi; \
-    cd / && \
-    git clone https://github.com/Project-N-E-K-O/N.E.K.O.git app && \
-    cd /app && \
-    git checkout main && \
-    unset http_proxy && \
-    unset https_proxy
+# RUN if [ -n "$HTTP_PROXY" ]; then export http_proxy=$HTTP_PROXY; fi; \
+#     if [ -n "$HTTPS_PROXY" ]; then export https_proxy=$HTTPS_PROXY; fi; \
+#     cd / && \
+#     git clone https://github.com/Project-N-E-K-O/N.E.K.O.git app && \
+#     cd /app && \
+#     git checkout main && \
+#     unset http_proxy && \
+#     unset https_proxy
+
+# COPY . /app
 
 # 7. 设置环境变量
 ENV PATH="/root/.cargo/bin:/usr/bin:/usr/local/bin:$PATH"
 ENV PYTHONPATH="/app:$PYTHONPATH"
 
 # 8. 复制 entrypoint 脚本
-COPY entrypoint.sh /entrypoint.sh
+COPY ./docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # 9. 创建数据持久化目录
